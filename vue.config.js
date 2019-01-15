@@ -1,6 +1,5 @@
 module.exports = {
 	devServer: {
-		host: 'localhost',
 		port: 2013,
 		// 设置代理
 		proxy: {
