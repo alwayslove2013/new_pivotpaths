@@ -77,7 +77,7 @@ const actions = {
 					console.log('test: 接受后端的数据', response.data)
 					let items = response.data.data
 					console.log('coreData', items)
-					commit(types.UPDATE_CORE2ITEMS, items)
+					commit(types.UPDATE_CORE2ITEMS, items.slice(0, 20))
 				})
 				.catch(function (error) {
 					console.log(error)

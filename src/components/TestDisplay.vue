@@ -20,6 +20,7 @@
 <script>
 	import $ from 'jquery'
 	import { mapState, mapActions } from 'vuex'
+
 	const d3 = require('d3')
 
 	export default {
@@ -58,9 +59,9 @@
 				this.drawAuthorView(authors, authorsLoc)
 
 				let tags = this.computeTags(items)
-				console.log('tags', tags)
+				// console.log('tags', tags)
 				let tagsLoc = this.computeTagsLoc(tags)
-				console.log('tagsLoc', tagsLoc)
+				// console.log('tagsLoc', tagsLoc)
 				this.drawTagView(tags, tagsLoc)
 			}
 		},
@@ -186,6 +187,7 @@
 				return Loc
 			},
 			drawAuthorView (authors, loc) {
+				let that = this
 				let authorDiv = d3.select('#authorDiv')
 				authorDiv.selectAll('div').remove()
 				// console.log('authors', authors)
@@ -218,6 +220,14 @@
 									.style('top', y + 'px')
 									.style('left', x + 'px')
 									.style('text-align', 'center')
+									.on('click', () => {
+										let core = {
+											type: 'author',
+											text: author.name
+										}
+										console.log('change core', core)
+										that.updateCore(core)
+									})
 									.append('span')
 									.classed('author', true)
 									.style('text-overflow', 'ellipsis')
@@ -249,6 +259,7 @@
 					let y = $(window).height() * 0.7 - 2 * gap * foo
 					// console.log('y', y)
 					for (let Y in loc[X]) {
+						let that = this
 						let tags = loc[X][Y]
 						tags.forEach((tag) => {
 							let x = (+$(window).width()) * 0.1 + (+$(window).width()) / 15 * X
@@ -263,6 +274,14 @@
 									.style('top', y + 'px')
 									.style('left', x + 'px')
 									.style('text-align', 'center')
+									.on('click', () => {
+										let core = {
+											type: 'tag',
+											text: tag.name
+										}
+										console.log('change core', core)
+										that.updateCore(core)
+									})
 									.append('span')
 									.classed('tag', true)
 									.style('text-overflow', 'ellipsis')
