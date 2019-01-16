@@ -1,8 +1,8 @@
 module.exports = {
+	publicPath: '/new_pivotpaths/',
 	devServer: {
 		port: 2013,
 		// 设置代理
-		publicPath: '/new_pivotpaths/',
 		proxy: {
 			'/api': {
 				target: 'http://localhost:1213/api', // 域名
