@@ -68,4 +68,14 @@
   white-space: nowrap;
   max-width: 80px;
 }
+.author_path {
+  fill: none;
+  stroke: blue;
+  stroke-width: 1px;
+}
+.tag_path {
+  fill: none;
+  stroke: red;
+  stroke-width: 1px;
+}
 </style>

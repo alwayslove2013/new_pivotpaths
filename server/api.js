@@ -71,6 +71,7 @@ module.exports = function (app) {
 								for (let key in tmp) {
 									let item = doc[key]
 									let result = {
+										id: item.id,
 										name: item.name,
 										cites: item.cites,
 										year: item.year,
@@ -118,6 +119,7 @@ module.exports = function (app) {
 								for (let key in tmp) {
 									let item = doc[key]
 									let result = {
+										id: item.id,
 										name: item.name,
 										cites: item.cites,
 										year: item.year,

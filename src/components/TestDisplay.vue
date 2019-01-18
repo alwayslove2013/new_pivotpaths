@@ -5,12 +5,10 @@
 				<span id="coreSpan">{{coreText}}</span>
 			</div>
 		</div>
-		<div id="authorDiv">
-		</div>
-		<div id="itemDiv">
-		</div>
-		<div id="tagDiv">
-		</div>
+		<div id="authorDiv"/>
+		<div id="itemDiv"/>
+		<div id="tagDiv"/>
+		<div id="pathDiv" class="path_div"/>
 		<svg>
 			<rect @click="backSearchView" width="50px" height="50px" style="fill:rgb(0,0,255);stroke-width:1; stroke:rgb(0,0,0)"/>
 		</svg>
@@ -26,7 +24,15 @@
 	export default {
 		name: 'TestDisplay',
 		data () {
-			return {}
+			return {
+				authors: [],
+				authorsLoc: [],
+				tags: [],
+				tagsLoc: [],
+				items: [],
+				loc2item: {},
+				itemWidth: 0
+			}
 		},
 		computed: {
 			...mapState([
@@ -40,6 +46,7 @@
 		},
 		mounted () {
 			console.log('启动TestView成功！！！')
+			this.itemWidth = $(window).height() * 0.25
 		},
 		watch: {
 			coreText () {
@@ -49,20 +56,25 @@
 			},
 			core2items (items) {
 				this.drawItemView(items)
-				let authors = this.computeAuthors(items)
-				// console.log('authors', authors)
+				this.authors = this.computeAuthors(items)
+				let authors = this.authors
+				console.log('authors', authors)
 				// authors.forEach((author) => {
 				//   console.log('authors', author.items)
 				// })
-				let authorsLoc = this.computeAuthorsLoc(authors)
-				// console.log('Loc', authorsLoc)
+				this.authorsLoc = this.computeAuthorsLoc(authors)
+				let authorsLoc = this.authorsLoc
+				console.log('Loc', authorsLoc)
 				this.drawAuthorView(authors, authorsLoc)
 
-				let tags = this.computeTags(items)
+				this.tags = this.computeTags(items)
+				let tags = this.tags
 				// console.log('tags', tags)
-				let tagsLoc = this.computeTagsLoc(tags)
+				this.tagsLoc = this.computeTagsLoc(tags)
+				let tagsLoc = this.tagsLoc
 				// console.log('tagsLoc', tagsLoc)
 				this.drawTagView(tags, tagsLoc)
+				this.drawPath()
 			}
 		},
 		methods: {
@@ -102,7 +114,9 @@
 								let author = {
 									name: name,
 									id: itemAuthorId,
-									items: [key]
+									items: [key],
+									left: 0,
+									top: 0
 								}
 								authorsID.push(itemAuthorId)
 								authors.push(author)
@@ -131,7 +145,9 @@
 								let tag = {
 									name: name,
 									id: itemTagId,
-									items: [key]
+									items: [key],
+									left: 0,
+									top: 0
 								}
 								tagsID.push(itemTagId)
 								tags.push(tag)
@@ -202,14 +218,17 @@
 					let authorViewHeight = +$(window).height() * 0.3
 					let gap = authorViewHeight / (bigGapCount * 3 + smallGapCount)
 					let foo = Math.random()
+					// let foo = 0
 					// console.log(bigGapCount, smallGapCount, gap, authorViewHeight, foo)
-					let y = authorViewHeight + 2 * gap * foo
+					let y = authorViewHeight - 2 * gap * foo
 					// console.log('y', y)
 					for (let Y in loc[X]) {
 						let authors = loc[X][Y]
 						authors.forEach((author) => {
 							let x = (+$(window).width()) * 0.1 + (+$(window).width()) / 15 * X
 							y = y - gap
+							author.top = y
+							author.left = x
 							// console.log('y', y)
 							// console.log($(window).width(), $(window).height())
 							// console.log('author', author, x, y)
@@ -255,15 +274,18 @@
 					let tagViewHeight = +$(window).height() * 0.3
 					let gap = tagViewHeight / (bigGapCount * 3 + smallGapCount)
 					let foo = Math.random()
+					// let foo = 0
 					// console.log(bigGapCount, smallGapCount, gap, authorViewHeight, foo)
-					let y = $(window).height() * 0.7 - 2 * gap * foo
+					let y = $(window).height() * 0.7 + 2 * gap * foo
 					// console.log('y', y)
 					for (let Y in loc[X]) {
 						let that = this
 						let tags = loc[X][Y]
 						tags.forEach((tag) => {
-							let x = (+$(window).width()) * 0.1 + (+$(window).width()) / 15 * X
+							let x = (+$(window).width()) * 0.2 + (+$(window).width()) / 15 * X
+							tag.left = x
 							y = y + gap
+							tag.top = y
 							// console.log('y', y)
 							// console.log($(window).width(), $(window).height())
 							// console.log('author', author, x, y)
@@ -295,6 +317,7 @@
 				}
 			},
 			drawItemView (items) {
+				let that = this
 				let itemDiv = d3.select('#itemDiv')
 				itemDiv.selectAll('div').remove()
 				let itemDivs = itemDiv.selectAll('div').data(items).enter()
@@ -313,6 +336,7 @@
 				//   .attr('width', 8 + 'px')
 				//   .attr('height', 8 + 'px')
 				//   .style('fill', 'red')
+				that.items = []
 				itemDivs
 						.append('div')
 						.attr('id', (d, i) => {
@@ -323,6 +347,14 @@
 						.style('left', (d, i) => {
 							let winWidth = $(window).width()
 							let x = winWidth * 0.1 + winWidth / 15 * i
+							let item = {
+								id: d.id,
+								name: d.name,
+								left: x,
+								top: $(window).height() * 0.5
+							}
+							that.items.push(item)
+							that.loc2item[i] = item
 							return x + 'px'
 						})
 						.style('transform', 'rotate(' + 45 + 'deg)')
@@ -332,10 +364,74 @@
 						.style('text-overflow', 'ellipsis')
 						.style('overflow', 'hidden')
 						.style('white-space', 'nowrap')
-						.style('width', 320 + 'px')
+						.style('width', that.itemWidth + 'px')
 						.text((d) => {
 							return d.name
 						})
+			},
+			drawPath () {
+				let that = this
+				let pathDiv = d3.select('#pathDiv')
+				pathDiv.selectAll('svg').remove()
+				let svg = pathDiv.append('svg')
+						.attr('width', $(window).width())
+						.attr('height', $(window).height())
+				let h = ''
+				that.authors.forEach((author => {
+					author.items.forEach((loc) => {
+						// let item = that.loc2item[loc]
+						// let endX = item.left + that.itemWidth * (1 - Math.sqrt(2) / 2)
+						// let endY = item.top - that.itemWidth * Math.sqrt(2) / 4
+						let idAuthor = '#' + author.id
+						let rectAuthor = $(idAuthor)[0].getBoundingClientRect()
+						let startX = rectAuthor.left + rectAuthor.width / 2
+						let startY = rectAuthor.top + rectAuthor.height
+
+						let idItem = '#item_' + loc
+						let rect = $(idItem)[0].getBoundingClientRect()
+						let endX = rect.x
+						let endY = rect.y
+
+						let control2 = $(window).height() * 0.05
+						let control1X = startX
+						let control1Y = endY - control2
+
+						let control2X = endX - control2
+						let control2Y = endY - control2
+
+						h += '<path class="author_path" d="M ' + startX + ' ' + startY + ' C ' + control1X + ' ' + control1Y + ' ' + control2X + ' ' + control2Y + ' ' + endX + ' ' + endY + '"/> '
+						console.log('compare', endX, endY)
+						console.log('try?', rect)
+					})
+				}))
+				that.tags.forEach((tag => {
+					tag.items.forEach((loc) => {
+						// let item = that.loc2item[loc]
+						// let endX = item.left + that.itemWidth * (1 - Math.sqrt(2) / 2)
+						// let endY = item.top - that.itemWidth * Math.sqrt(2) / 4
+						let idTag = '#' + tag.id
+						let rectTag = $(idTag)[0].getBoundingClientRect()
+						let startX = rectTag.left + rectTag.width / 2
+						let startY = rectTag.top
+
+						let idItem = '#item_' + loc
+						let rect = $(idItem)[0].getBoundingClientRect()
+						let endX = rect.x + rect.width
+						let endY = rect.y + rect.height
+
+						let control2 = $(window).height() * 0.05
+						let control1X = startX
+						let control1Y = endY + control2
+
+						let control2X = endX + control2
+						let control2Y = endY + control2
+
+						h += '<path class="tag_path" d="M ' + startX + ' ' + startY + ' C ' + control1X + ' ' + control1Y + ' ' + control2X + ' ' + control2Y + ' ' + endX + ' ' + endY + '"/> '
+						console.log('compare', endX, endY)
+						console.log('try?', rect)
+					})
+				}))
+				svg.html(h)
 			}
 		}
 	}
@@ -355,6 +451,12 @@
 		padding-left: 18px;
 		padding-right: 4px;
 		background: url("../assets/author5.png") no-repeat left center;
+	}
+	.path_div {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		pointer-events: none;
 	}
 	#testDispaly_ {
 		font-size: 20px;
