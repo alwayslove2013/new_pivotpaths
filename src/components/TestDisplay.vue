@@ -1,9 +1,7 @@
 <template>
 	<div id="testDisplay_">
 		<div id="coreDiv">
-			<div>
-				<span id="coreSpan">{{coreText}}</span>
-			</div>
+			<!--<span id="coreSpan">{{coreText}}</span>-->
 		</div>
 		<div id="authorDiv"/>
 		<div id="itemDiv"/>
@@ -49,13 +47,16 @@
 			this.itemWidth = $(window).height() * 0.25
 		},
 		watch: {
-			coreText () {
-				let winHeight = $(window).height()
-				$('#coreDiv').css('transform', 'translate(' + 50 + 'px, ' + winHeight / 2 + 'px)')
-				$('#coreSpan').removeClass().addClass(this.coreType)
-			},
-			core2items (items) {
-				this.drawItemView(items)
+			coreText (t) {
+				// let winHeight = $(window).height()
+				// $('#coreDiv').css('transform', 'translate(' + 50 + 'px, ' + winHeight / 2 + 'px)')
+				d3.select('#coreDiv').selectAll('span').remove()
+				d3.select('#coreDiv').append('span').attr('id', 'coreSpan').classed('core_' + this.coreType, true).text(t)
+				// $('#coreSpan').removeClass().addClass('core_' + this.coreType)
+				let coreWidth = $('#coreDiv')[0].getBoundingClientRect().width
+				console.log('coreWidth', coreWidth)
+				let items = this.core2items
+				this.drawItemView(items, coreWidth)
 				this.authors = this.computeAuthors(items)
 				let authors = this.authors
 				console.log('authors', authors)
@@ -65,7 +66,7 @@
 				this.authorsLoc = this.computeAuthorsLoc(authors)
 				let authorsLoc = this.authorsLoc
 				console.log('Loc', authorsLoc)
-				this.drawAuthorView(authors, authorsLoc)
+				this.drawAuthorView(authors, authorsLoc, coreWidth)
 
 				this.tags = this.computeTags(items)
 				let tags = this.tags
@@ -73,7 +74,7 @@
 				this.tagsLoc = this.computeTagsLoc(tags)
 				let tagsLoc = this.tagsLoc
 				// console.log('tagsLoc', tagsLoc)
-				this.drawTagView(tags, tagsLoc)
+				this.drawTagView(tags, tagsLoc, coreWidth)
 				this.drawPath()
 			}
 		},
@@ -202,7 +203,7 @@
 				})
 				return Loc
 			},
-			drawAuthorView (authors, loc) {
+			drawAuthorView (authors, loc, coreWidth) {
 				let that = this
 				let authorDiv = d3.select('#authorDiv')
 				authorDiv.selectAll('div').remove()
@@ -225,7 +226,7 @@
 					for (let Y in loc[X]) {
 						let authors = loc[X][Y]
 						authors.forEach((author) => {
-							let x = (+$(window).width()) * 0.1 + (+$(window).width()) / 15 * X
+							let x = coreWidth + (+$(window).width()) / 15 * X + 20
 							y = y - gap
 							author.top = y
 							author.left = x
@@ -259,7 +260,7 @@
 					}
 				}
 			},
-			drawTagView (tags, loc) {
+			drawTagView (tags, loc, coreWidth) {
 				let tagDiv = d3.select('#tagDiv')
 				tagDiv.selectAll('div').remove()
 				// console.log('authors', authors)
@@ -282,7 +283,7 @@
 						let that = this
 						let tags = loc[X][Y]
 						tags.forEach((tag) => {
-							let x = (+$(window).width()) * 0.2 + (+$(window).width()) / 15 * X
+							let x = coreWidth + 20 + (+$(window).width()) / 15 * (+X + 1)
 							tag.left = x
 							y = y + gap
 							tag.top = y
@@ -316,7 +317,7 @@
 					}
 				}
 			},
-			drawItemView (items) {
+			drawItemView (items, coreWidth) {
 				let that = this
 				let itemDiv = d3.select('#itemDiv')
 				itemDiv.selectAll('div').remove()
@@ -346,7 +347,7 @@
 						.style('top', $(window).height() * 0.5 + 'px')
 						.style('left', (d, i) => {
 							let winWidth = $(window).width()
-							let x = winWidth * 0.1 + winWidth / 15 * i
+							let x = coreWidth + 20 + winWidth / 15 * i
 							let item = {
 								id: d.id,
 								name: d.name,
@@ -400,8 +401,8 @@
 						let control2Y = endY - control2
 
 						h += '<path class="author_path" d="M ' + startX + ' ' + startY + ' C ' + control1X + ' ' + control1Y + ' ' + control2X + ' ' + control2Y + ' ' + endX + ' ' + endY + '"/> '
-						console.log('compare', endX, endY)
-						console.log('try?', rect)
+						// console.log('compare', endX, endY)
+						// console.log('try?', rect)
 					})
 				}))
 				that.tags.forEach((tag => {
@@ -427,8 +428,8 @@
 						let control2Y = endY + control2
 
 						h += '<path class="tag_path" d="M ' + startX + ' ' + startY + ' C ' + control1X + ' ' + control1Y + ' ' + control2X + ' ' + control2Y + ' ' + endX + ' ' + endY + '"/> '
-						console.log('compare', endX, endY)
-						console.log('try?', rect)
+						// console.log('compare', endX, endY)
+						// console.log('try?', rect)
 					})
 				}))
 				svg.html(h)
@@ -438,27 +439,21 @@
 </script>
 
 <style scoped>
-	.author {
-		color: #004787;
-		font-size: 16px;
-		background: rgba(255,255,255,.5);
-		border-radius: 1.5em;
-		border: 2px solid #3488BC;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-		max-width: 150px;
-		padding-left: 18px;
-		padding-right: 4px;
-		background: url("../assets/author5.png") no-repeat left center;
+	#coreDiv {
+		position: absolute;
+		left: 2%;
+		top: 50%;
 	}
+
 	.path_div {
 		position: absolute;
 		top: 0px;
 		left: 0px;
 		pointer-events: none;
 	}
+
 	#testDispaly_ {
 		font-size: 20px;
+		text-align: center;
 	}
 </style>

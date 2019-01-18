@@ -78,4 +78,31 @@
   stroke: red;
   stroke-width: 1px;
 }
+.core_author {
+  color: #004787;
+  font-size: 16px;
+  background: rgba(255,255,255,.5);
+  border-radius: 1.5em;
+  border: 2px solid #3488BC;
+  /*text-overflow: ellipsis;*/
+  /*overflow: hidden;*/
+  /*white-space: nowrap;*/
+  /*max-width: 150px;*/
+  padding: 2px 4px 2px 18px;
+  background: url("./assets/author5.png") no-repeat left center;
+}
+
+.core_tag {
+  color: #B2203B;
+  font-size: 16px;
+  background: rgba(255,255,255,.5);
+  border-radius: 1.5em;
+  border: 2px solid #CD5968;
+  /*text-overflow: ellipsis;*/
+  /*overflow: hidden;*/
+  /*white-space: nowrap;*/
+  /*max-width: 150px;*/
+  padding: 2px 4px 2px 18px;
+  background: url("./assets/tag5.png") no-repeat left center;
+}
 </style>
