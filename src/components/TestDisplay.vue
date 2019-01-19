@@ -1,7 +1,12 @@
 <template>
 	<div id="testDisplay_">
 		<div id="coreDiv">
-			<!--<span id="coreSpan">{{coreText}}</span>-->
+			<select v-model="itemOrder">
+				<option value="cited">most cited</option>
+				<option value="time">most recently</option>
+				<option value="random">random</option>
+			</select>
+			<div id="coreText"/>
 		</div>
 		<div id="authorDiv"/>
 		<div id="itemDiv"/>
@@ -29,7 +34,8 @@
 				tagsLoc: [],
 				items: [],
 				loc2item: {},
-				itemWidth: 0
+				itemWidth: 0,
+				itemOrder: ''
 			}
 		},
 		computed: {
@@ -45,27 +51,26 @@
 		mounted () {
 			console.log('启动TestView成功！！！')
 			this.itemWidth = $(window).height() * 0.25
+			this.itemOrder = 'cited'
 		},
 		watch: {
-			coreText (t) {
-				// let winHeight = $(window).height()
-				// $('#coreDiv').css('transform', 'translate(' + 50 + 'px, ' + winHeight / 2 + 'px)')
-				d3.select('#coreDiv').selectAll('span').remove()
-				d3.select('#coreDiv').append('span').attr('id', 'coreSpan').classed('core_' + this.coreType, true).text(t)
-				// $('#coreSpan').removeClass().addClass('core_' + this.coreType)
-				let coreWidth = $('#coreDiv')[0].getBoundingClientRect().width
-				console.log('coreWidth', coreWidth)
-				let items = this.core2items
-				this.drawItemView(items, coreWidth)
+			itemOrder (val) {
+				console.log('order', val)
+			},
+			core2items (items) {
+				let coreWidth = this.drawCoreView()
+				// let items = this.core2items
+				// console.log('drawItemView', items, coreWidth)
+				this.drawItemView(coreWidth)
 				this.authors = this.computeAuthors(items)
 				let authors = this.authors
-				console.log('authors', authors)
+				// console.log('authors', authors)
 				// authors.forEach((author) => {
 				//   console.log('authors', author.items)
 				// })
 				this.authorsLoc = this.computeAuthorsLoc(authors)
 				let authorsLoc = this.authorsLoc
-				console.log('Loc', authorsLoc)
+				// console.log('Loc', authorsLoc)
 				this.drawAuthorView(authors, authorsLoc, coreWidth)
 
 				this.tags = this.computeTags(items)
@@ -85,6 +90,16 @@
 				'updateWord2Tags',
 				'updateCore'
 			]),
+			drawCoreView () {
+				// let winHeight = $(window).height()
+				// $('#coreDiv').css('transform', 'translate(' + 50 + 'px, ' + winHeight / 2 + 'px)')
+				// $('#coreSpan').removeClass().addClass('core_' + this.coreType)
+				d3.select('#coreText').selectAll('span').remove()
+				d3.select('#coreText').append('span').attr('id', 'coreSpan').classed('core_' + this.coreType, true).text(this.coreText)
+				let coreWidth = $('#coreDiv')[0].getBoundingClientRect().width
+				// console.log('coreWidth', coreWidth)
+				return coreWidth
+			},
 			locX (foo) {
 				let sum = 0
 				foo.items.forEach((d) => {
@@ -317,8 +332,9 @@
 					}
 				}
 			},
-			drawItemView (items, coreWidth) {
+			drawItemView (coreWidth) {
 				let that = this
+				let items = that.core2items
 				let itemDiv = d3.select('#itemDiv')
 				itemDiv.selectAll('div').remove()
 				let itemDivs = itemDiv.selectAll('div').data(items).enter()
@@ -445,11 +461,27 @@
 		top: 50%;
 	}
 
+	#authorDiv {
+		position: absolute;
+		z-index: 50;
+	}
+
+	#itemDiv {
+		position: absolute;
+		z-index: 50;
+	}
+
+	#tagDiv {
+		position: absolute;
+		z-index: 50;
+	}
+
 	.path_div {
 		position: absolute;
 		top: 0px;
 		left: 0px;
 		pointer-events: none;
+		z-index: 10;
 	}
 
 	#testDispaly_ {
