@@ -422,6 +422,28 @@
 						.text((d) => {
 							return d.name
 						})
+						.on('mouseover', function (d) {
+							d3.select(this).classed('itemHover', true)
+							d.authors.forEach((author) => {
+								console.log('author', author)
+								$('#' + author).css('background', 'rgb(213,230,236)')
+								$('#' + author).css('border-radius', '0.5em')
+							})
+							d.tags.forEach((tag) => {
+								console.log('author', tag)
+								$('#' + tag).css('background', 'rgb(244,227,230)')
+								$('#' + tag).css('border-radius', '0.5em')
+							})
+						})
+						.on('mouseout', function (d) {
+							d3.select(this).classed('itemHover', false)
+							d.authors.forEach((author) => {
+								$('#' + author).css('background', 'rgba(255,255,255,0.5)')
+							})
+							d.tags.forEach((tag) => {
+								$('#' + tag).css('background', 'rgba(255,255,255,0.5)')
+							})
+						})
 			},
 			drawPath () {
 				let that = this

@@ -21,7 +21,12 @@
   padding-left: 18px;
   padding-right: 4px;
   font-size: 12px;
-  background: rgba(255,255,255,.5) url("./assets/item5.png") no-repeat left center;
+  background: rgba(255,255,255,0.5) url("./assets/item5.png") no-repeat left center;
+  cursor: pointer;
+}
+
+.itemHover {
+  border: 2px solid #62A55E;
 }
 
 .author {
@@ -37,6 +42,7 @@
   overflow: hidden;
   white-space: nowrap;
   max-width: 80px;
+  cursor: pointer;
 }
 
 .tag {
@@ -52,6 +58,7 @@
   overflow: hidden;
   white-space: nowrap;
   max-width: 80px;
+  cursor: pointer;
 }
 .author_path {
   fill: none;
