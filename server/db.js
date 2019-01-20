@@ -49,7 +49,8 @@ const idDicSchema = new Schema({
 mongoose.Promise = global.Promise
 
 // 连一下数据库，看成功与否
-mongoose.connect('mongodb://192.168.10.9:27017/PivotPaths')
+// mongoose.connect('mongodb://192.168.10.9:27017/PivotPaths')
+mongoose.connect('mongodb://localhost:27017/PivotPaths')
 mongoose.connection.on('error', function (error) {
 	console.log('数据库test_nodeVue连接失败：' + error)
 })

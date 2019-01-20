@@ -1,11 +1,14 @@
 <template>
 	<div id="testDisplay_">
 		<div id="coreDiv">
-			<select v-model="itemOrder">
+			<select v-model="itemOrder" class="order">
 				<option value="cited">most cited</option>
-				<option value="time">most recently</option>
+				<option value="time">most recent</option>
 				<option value="random">random</option>
 			</select>
+			<div>
+				<span>publications about</span>
+			</div>
 			<div id="coreText"/>
 		</div>
 		<div id="authorDiv"/>
@@ -56,6 +59,30 @@
 		watch: {
 			itemOrder (val) {
 				console.log('order', val)
+				// d3.select('#itemDiv').selectAll('div')
+				// 		.sort((itemA, itemB) => {
+				// 			console.log(itemA.year, itemB.year)
+				// 			if (val === 'time') {
+				// 				return +itemB.year - itemA.year
+				// 			}
+				// 			if (val === 'cited') {
+				// 				return +itemB.cites - itemA.cites
+				// 			}
+				// 			if (val === 'random') {
+				// 				return Math.random() - 0.5
+				// 			}
+				// 		})
+				// 		.each((item) => {
+				// 			console.log(item.year)
+				// 		})
+				let sortF = this.sortItemsByTime
+				if (val === 'cited') {
+					sortF = this.sortItemsByCites
+				}
+				if (val === 'random') {
+					sortF = this.sortItemsByRandom
+				}
+				this.core2items.sort(sortF)
 			},
 			core2items (items) {
 				let coreWidth = this.drawCoreView()
@@ -90,6 +117,16 @@
 				'updateWord2Tags',
 				'updateCore'
 			]),
+			sortItemsByTime (itemA, itemB) {
+				return +itemB.year - itemA.year
+			},
+			sortItemsByCites (itemA, itemB) {
+				return +itemB.cites - itemA.cites
+			},
+			sortItemsByRandom (itemA, itemB) {
+				let sum = +itemA.year + itemB.year
+				return sum - sum + Math.random() - 0.5
+			},
 			drawCoreView () {
 				// let winHeight = $(window).height()
 				// $('#coreDiv').css('transform', 'translate(' + 50 + 'px, ' + winHeight / 2 + 'px)')
@@ -455,10 +492,24 @@
 </script>
 
 <style scoped>
+	.order {
+		color: #999;
+		border: 1px solid #ddd;
+		border-radius: 0.5em;
+		cursor: pointer;
+		appearance: none;
+		padding: 1px 14px 2px 4px;
+		font-size: 16px;
+		background: rgba(255,255,255,1) url('../assets/dropdown.png') no-repeat right center;
+	}
+
 	#coreDiv {
 		position: absolute;
-		left: 2%;
-		top: 50%;
+		left: 1%;
+		top: 45%;
+		color: #999;
+		font-size: 16px;
+		line-height: 30px;
 	}
 
 	#authorDiv {
