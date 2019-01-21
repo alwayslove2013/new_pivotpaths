@@ -5,21 +5,21 @@
 			<div id="search">
 				<div v-for="(item, index) in word2authors" :key="item.name" :id="item.name">
 					<img src="../assets/author5.png">
-					<span class="searchAuthor" @mouseenter="hoverAuthorShow(index)" @mouseleave="hoverAuthorHide(index)" @click="setAuthorCore(item.name)" :id="'author' + index">{{ item.name }}</span>
+					<span class="searchAuthor" @mouseenter="hoverAuthorShow(index)" @mouseleave="hoverAuthorHide(index)" @click="setAuthorCore(item)" :id="'author' + index">{{ item.name }}</span>
 				</div>
 				<div v-for="(item, index) in word2titles" :key="item.name" :id="item.name">
 					<img src="../assets/item5.png">
-					<span class="searchItem" @mouseenter="hoverTitleShow(index)" @mouseleave="hoverTitleHide(index)" :id="'title' + index">{{ item.name.slice(0, 40) }}</span>
+					<span class="searchItem" @mouseenter="hoverTitleShow(index)" @mouseleave="hoverTitleHide(index)" @click="setItemCore(item)" :id="'title' + index">{{ item.name.slice(0, 40) }}</span>
 					<span>...</span>
 				</div>
 				<div v-for="(item, index) in word2tags" :key="item.name" :id="item.name">
 					<img src="../assets/tag5.png">
-					<span class="searchTag" @mouseenter="hoverTagShow(index)" @mouseleave="hoverTagHide(index)" @click="setTagCore(item.name)" :id="'tag' + index">{{ item.name }}</span>
+					<span class="searchTag" @mouseenter="hoverTagShow(index)" @mouseleave="hoverTagHide(index)" @click="setTagCore(item)" :id="'tag' + index">{{ item.name }}</span>
 				</div>
 			</div>
 		</div>
 		<div id="testDisplay" style="display: none">
-			<test-display></test-display>
+			<test-display/>
 		</div>
 	</div>
 
@@ -76,19 +76,31 @@
 			hoverTagHide (index) {
 				$('#tag' + index).css('border', '')
 			},
-			setAuthorCore (name) {
+			setAuthorCore (item) {
 				let tmp = {
 					type: 'author',
-					text: name
+					text: item.name,
+					id: item.id
 				}
 				this.updateCore(tmp)
 				$('#searchView').css('display', 'none')
 				$('#testDisplay').css('display', 'inherit')
 			},
-			setTagCore (name) {
+			setTagCore (item) {
 				let tmp = {
 					type: 'tag',
-					text: name
+					text: item.name,
+					id: item.id
+				}
+				this.updateCore(tmp)
+				$('#searchView').css('display', 'none')
+				$('#testDisplay').css('display', 'inherit')
+			},
+			setItemCore (item) {
+				let tmp = {
+					type: 'item',
+					text: item.name,
+					id: item.id
 				}
 				this.updateCore(tmp)
 				$('#searchView').css('display', 'none')

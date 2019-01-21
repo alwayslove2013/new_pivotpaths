@@ -181,19 +181,19 @@
 				return authors
 			},
 			computeTags (items) {
-				let tagsID = []
-				let tags = []
+				let tagsID = [];
+				let tags = [];
 				for (let key in items) {
-					let item = items[key]
-					let itemTagsId = item.tags
+					let item = items[key];
+					let itemTagsId = item.tags;
 					// console.log(itemAuthorsId)
 					itemTagsId.forEach((itemTagId) => {
 						// console.log(itemAuthorId)
-						let tmp = tagsID.indexOf(itemTagId)
+						let tmp = tagsID.indexOf(itemTagId);
 						if (tmp >= 0) {
 							tags[tmp].items.push(key)
 						} else {
-							let name = this.tagIdDic[itemTagId]
+							let name = this.tagIdDic[itemTagId];
 							if (name !== this.coreText) {
 								let tag = {
 									name: name,
@@ -212,9 +212,9 @@
 				return tags
 			},
 			computeAuthorsLoc (authors) {
-				let Loc = {}
+				let Loc = {};
 				authors.forEach((author) => {
-					let x = this.locX(author)
+					let x = this.locX(author);
 					// console.log(author.name, y)
 					// if (y in Loc) {
 					//   Loc[y].push(author)
@@ -224,7 +224,7 @@
 					if (x in Loc === false) {
 						Loc[x] = {}
 					}
-					let y = author.items.length
+					let y = author.items.length;
 					if (y in Loc[x]) {
 						Loc[x][y].push(author)
 					} else {

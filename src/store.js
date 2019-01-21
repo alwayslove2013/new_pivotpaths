@@ -7,6 +7,7 @@ Vue.use(Vuex)
 const state = {
 	coreType: String,
 	coreText: String,
+	coreId: String,
 	word2titles: [],
 	word2tags: [],
 	word2authors: [],
@@ -24,6 +25,7 @@ const types = {
 	UPDATE_WORD2AUTHORS: 'UPDATE_WORD2AUTHORS',
 	UPDATE_CORE_TYPE: 'UPDATE_CORE_TYPE',
 	UPDATE_CORE_TEXT: 'UPDATE_CORE_TEXT',
+	UPDATE_CORE_ID: 'UPDATE_CORE_ID',
 	UPDATE_CORE2ITEMS: 'UPDATE_CORE2ITEMS',
 	UPDATE_AUTHORIDDIC: 'UPDATE_AUTHORIDDIC',
 	UPDATE_ITEMIDDIC: 'UPDATE_ITEMIDDIC',
@@ -46,6 +48,9 @@ const mutations = {
 	[types.UPDATE_CORE_TEXT] (state, payload) {
 		state.coreText = payload
 	},
+	[types.UPDATE_CORE_ID] (state, payload) {
+		state.coreId = payload
+	},
 	[types.UPDATE_CORE2ITEMS] (state, payload) {
 		state.core2items = payload
 	},
@@ -65,11 +70,13 @@ const actions = {
 		console.log('更新core', payload)
 		commit(types.UPDATE_CORE_TYPE, payload.type)
 		commit(types.UPDATE_CORE_TEXT, payload.text)
+		commit(types.UPDATE_CORE_ID, payload.id)
 		axios({
 			methods: 'get',
 			url: '/api/core_' + payload.type,
 			params: {
-				word: payload.text
+				word: payload.text,
+				id: payload.id
 			},
 			timeout: 10000
 		})

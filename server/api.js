@@ -77,8 +77,8 @@ module.exports = function (app) {
 										year: item.year,
 										authors: item.authors,
 										tags: item.tags,
-										refList: item.refList,
-										citeList: item.citeList
+										refList: item.refs_,
+										citeList: item.cites_
 									}
 									results.push(result)
 								}
@@ -125,8 +125,8 @@ module.exports = function (app) {
 										year: item.year,
 										authors: item.authors,
 										tags: item.tags,
-										refList: item.refList,
-										citeList: item.citeList
+										refList: item.refs_,
+										citeList: item.cites_
 									}
 									results.push(result)
 								}
@@ -135,6 +135,79 @@ module.exports = function (app) {
 							}
 						}
 					})
+				}
+			}
+		})
+	})
+	app.get('/api/core_item', function (req, res) {
+		let data = req.query
+		console.log('data', data)
+		db.paperModel.findOne({id: data.id}).then((doc, err) => {
+			if (err) {
+				console.log('DOI 查询失败' + err)
+				res.json({code: 1, msg: '查询出错，未知原因'})
+			} else {
+				if (!doc) {
+					res.json({code: 2, msg: '查询不到，未知原因'})
+				} else {
+					let refList = []
+					let citeList = []
+					let item = doc
+					console.log('item', item)
+					Promise.all([db.paperModel.find({id: {$in: item.refs_}}).then((doc, err) => {
+						if (err) {
+							console.log('DOI 查询失败' + err)
+							res.json({code: 1, msg: '查询出错，未知原因'})
+						} else {
+							if (!doc) {
+								res.json({code: 2, msg: '查询不到，未知原因'})
+							} else {
+								doc.forEach((item) => {
+									let result = {
+										id: item.id,
+										name: item.name,
+										cites: item.cites,
+										year: item.year,
+										authors: item.authors,
+										tags: item.tags,
+										refList: item.refs_,
+										citeList: item.cites_
+									}
+									// console.log('refItem', result)
+									refList.push(result)
+								})
+							}
+						}
+					}), db.paperModel.find({id: {$in: item.cites_}}).then((doc, err) => {
+						if (err) {
+							console.log('DOI 查询失败' + err)
+							res.json({code: 1, msg: '查询出错，未知原因'})
+						} else {
+							if (!doc) {
+								res.json({code: 2, msg: '查询不到，未知原因'})
+							} else {
+								doc.forEach((item) => {
+									let result = {
+										id: item.id,
+										name: item.name,
+										cites: item.cites,
+										year: item.year,
+										authors: item.authors,
+										tags: item.tags,
+										refList: item.refs_,
+										citeList: item.cites_
+									}
+									// console.log('citeItem', result)
+									citeList.push(result)
+								})
+							}
+						}
+					})])
+							.then(() => {
+								console.log('refList', refList.length)
+								console.log('citeList', citeList.length)
+								res.json({code: 3, msg: '查询成功', refData: refList, citeData: citeList})
+							})
 				}
 			}
 		})
@@ -161,7 +234,8 @@ module.exports = function (app) {
 						let result = {
 							name: item.name,
 							cites: item.cites,
-							year: item.year
+							year: item.year,
+							id: item.id
 						}
 						results.push(result)
 					}
@@ -195,7 +269,8 @@ module.exports = function (app) {
 							name: item.fullname,
 							cites: item.cites,
 							count: item.count,
-							org: item.org
+							org: item.org,
+							id: item.id
 						}
 						results.push(result)
 					}
@@ -227,7 +302,8 @@ module.exports = function (app) {
 						let item = doc[key]
 						let result = {
 							name: item.name,
-							count: item.count
+							count: item.count,
+							id: item.id
 						}
 						results.push(result)
 					}

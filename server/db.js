@@ -8,8 +8,8 @@ const paperSchema = new Schema({
 	name: String,
 	refs: Number,
 	deg: Number,
-	citeList: Array,
-	refList: Array,
+	cites_: Array,
+	refs_: Array,
 	cites: Number,
 	authors: Array,
 	tags: Array
