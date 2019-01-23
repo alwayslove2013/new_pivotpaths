@@ -12,9 +12,12 @@ const state = {
 	word2tags: [],
 	word2authors: [],
 	core2items: [],
+	coreRefList: [],
+	coreCiteList: [],
 	authorIdDic: {},
 	itemIdDic: {},
-	tagIdDic: {}
+	tagIdDic: {},
+	coreLeft: 0
 }
 
 const getters = {}
@@ -29,7 +32,11 @@ const types = {
 	UPDATE_CORE2ITEMS: 'UPDATE_CORE2ITEMS',
 	UPDATE_AUTHORIDDIC: 'UPDATE_AUTHORIDDIC',
 	UPDATE_ITEMIDDIC: 'UPDATE_ITEMIDDIC',
-	UPDATE_TAGIDDIC: 'UPDATE_TAGIDDIC'
+	UPDATE_TAGIDDIC: 'UPDATE_TAGIDDIC',
+	UPDATE_CORE: 'UPDATE_CORE',
+	UPDATE_REF_CITE: 'UPDATE_REF_CITE',
+	UPDATE_CORELEFT: 'UPDATE_CORELEFT',
+	COMPUTE_CORE2ITEMS: 'COMPUTE_CORE2ITEMS'
 }
 
 const mutations = {
@@ -42,14 +49,15 @@ const mutations = {
 	[types.UPDATE_WORD2AUTHORS] (state, payload) {
 		state.word2authors = payload
 	},
-	[types.UPDATE_CORE_TYPE] (state, payload) {
-		state.coreType = payload
+	[types.UPDATE_CORE] (state, payload) {
+		state.coreType = payload.type
+		state.coreText = payload.text
+		state.coreId = payload.id
 	},
-	[types.UPDATE_CORE_TEXT] (state, payload) {
-		state.coreText = payload
-	},
-	[types.UPDATE_CORE_ID] (state, payload) {
-		state.coreId = payload
+	[types.UPDATE_REF_CITE] (state, payload) {
+		state.coreRefList = payload.refList
+		state.coreCiteList = payload.citeList
+		state.coreLeft = payload.refList.length
 	},
 	[types.UPDATE_CORE2ITEMS] (state, payload) {
 		state.core2items = payload
@@ -62,15 +70,22 @@ const mutations = {
 	},
 	[types.UPDATE_TAGIDDIC] (state, payload) {
 		state.tagIdDic = payload
+	},
+	[types.UPDATE_CORELEFT] (state, payload) {
+		state.coreLeft = payload
+	},
+	[types.COMPUTE_CORE2ITEMS] (state) {
+		state.core2items = state.coreRefList.concat(state.coreCiteList)
 	}
 }
 
 const actions = {
 	updateCore ({commit}, payload) {
 		console.log('更新core', payload)
-		commit(types.UPDATE_CORE_TYPE, payload.type)
-		commit(types.UPDATE_CORE_TEXT, payload.text)
-		commit(types.UPDATE_CORE_ID, payload.id)
+		commit(types.UPDATE_CORE, payload)
+		// commit(types.UPDATE_CORE_TYPE, payload.type)
+		// commit(types.UPDATE_CORE_TEXT, payload.text)
+		// commit(types.UPDATE_CORE_ID, payload.id)
 		axios({
 			methods: 'get',
 			url: '/api/core_' + payload.type,
@@ -82,9 +97,21 @@ const actions = {
 		})
 				.then(function (response) {
 					console.log('test: 接受后端的数据', response.data)
-					let items = response.data.data
+					let items = []
+					if (payload.type === 'item') {
+						let tmp = {
+							refList: response.data.refData,
+							citeList: response.data.citeData
+						}
+						console.log('coreData', tmp)
+						commit(types.UPDATE_REF_CITE, tmp)
+						items = response.data.refData.concat(response.data.citeData)
+					} else {
+						items = response.data.data
+						commit(types.UPDATE_CORELEFT, 0)
+					}
 					console.log('coreData', items)
-					commit(types.UPDATE_CORE2ITEMS, items.slice(0, 20))
+					commit(types.UPDATE_CORE2ITEMS, items)
 				})
 				.catch(function (error) {
 					console.log(error)
@@ -181,6 +208,9 @@ const actions = {
 				.catch((err) => {
 					console.log(err)
 				})
+	},
+	computeCore2items ({commit}) {
+		commit(types.COMPUTE_CORE2ITEMS)
 	}
 }
 

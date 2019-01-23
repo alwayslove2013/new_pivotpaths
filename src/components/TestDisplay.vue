@@ -38,7 +38,8 @@
 				items: [],
 				loc2item: {},
 				itemWidth: 0,
-				itemOrder: ''
+				itemOrder: '',
+				gap: 0
 			}
 		},
 		computed: {
@@ -48,6 +49,9 @@
 				'coreText',
 				'authorIdDic',
 				'itemIdDic',
+				'coreRefList',
+				'coreCiteList',
+				'coreLeft',
 				'tagIdDic'
 			])
 		},
@@ -55,6 +59,8 @@
 			console.log('启动TestView成功！！！')
 			this.itemWidth = $(window).height() * 0.25
 			this.itemOrder = 'cited'
+			let winWidth = $(window).width()
+			this.gap = winWidth / 15
 		},
 		watch: {
 			itemOrder (val) {
@@ -76,13 +82,20 @@
 				// 			console.log(item.year)
 				// 		})
 				let sortF = this.sortItemsByTime
+				let that = this
 				if (val === 'cited') {
 					sortF = this.sortItemsByCites
 				}
 				if (val === 'random') {
 					sortF = this.sortItemsByRandom
 				}
-				this.core2items.sort(sortF)
+				if (that.coreType === 'item') {
+					that.coreRefList.sort(sortF)
+					that.coreCiteList.sort(sortF)
+					that.computeCore2items()
+				} else {
+					that.core2items.sort(sortF)
+				}
 			},
 			core2items (items) {
 				let coreWidth = this.drawCoreView()
@@ -115,6 +128,7 @@
 				'updateWord2Titles',
 				'updateWord2Authors',
 				'updateWord2Tags',
+				'computeCore2items',
 				'updateCore'
 			]),
 			sortItemsByTime (itemA, itemB) {
@@ -128,12 +142,11 @@
 				return sum - sum + Math.random() - 0.5
 			},
 			drawCoreView () {
-				// let winHeight = $(window).height()
-				// $('#coreDiv').css('transform', 'translate(' + 50 + 'px, ' + winHeight / 2 + 'px)')
-				// $('#coreSpan').removeClass().addClass('core_' + this.coreType)
+				let that = this
 				d3.select('#coreText').selectAll('span').remove()
 				d3.select('#coreText').append('span').attr('id', 'coreSpan').classed('core_' + this.coreType, true).text(this.coreText)
 				let coreWidth = $('#coreDiv')[0].getBoundingClientRect().width
+				$('#coreDiv').css('left', that.coreLeft * that.gap + $(window).width() * 0.03)
 				// console.log('coreWidth', coreWidth)
 				return coreWidth
 			},
@@ -278,7 +291,7 @@
 					for (let Y in loc[X]) {
 						let authors = loc[X][Y]
 						authors.forEach((author) => {
-							let x = coreWidth + (+$(window).width()) / 15 * X + 20
+							let x = coreWidth * (X >= that.coreLeft) + that.gap * X + 20
 							y = y - gap
 							author.top = y
 							author.left = x
@@ -295,7 +308,8 @@
 									.on('click', () => {
 										let core = {
 											type: 'author',
-											text: author.name
+											text: author.name,
+											id: author.id
 										}
 										console.log('change core', core)
 										that.updateCore(core)
@@ -335,7 +349,7 @@
 						let that = this
 						let tags = loc[X][Y]
 						tags.forEach((tag) => {
-							let x = coreWidth + 20 + (+$(window).width()) / 15 * (+X + 1)
+							let x = coreWidth * (X >= that.coreLeft) + 20 + that.gap * (+X + 1)
 							tag.left = x
 							y = y + gap
 							tag.top = y
@@ -352,7 +366,8 @@
 									.on('click', () => {
 										let core = {
 											type: 'tag',
-											text: tag.name
+											text: tag.name,
+											id: tag.id
 										}
 										console.log('change core', core)
 										that.updateCore(core)
@@ -375,21 +390,6 @@
 				let itemDiv = d3.select('#itemDiv')
 				itemDiv.selectAll('div').remove()
 				let itemDivs = itemDiv.selectAll('div').data(items).enter()
-				// itemDivs
-				//   .append('svg')
-				//   .attr('width', 10)
-				//   .attr('height', 10)
-				//   .style('transform', (d, i) => {
-				//     let winWidth = $(window).width()
-				//     let winHeight = $(window).height()
-				//     let x = winWidth * 0.1 + winWidth / 20 * i
-				//     let y = winHeight * 0.6
-				//     return 'translate(' + x + 'px, ' + y + 'px)'
-				//   })
-				//   .append('rect')
-				//   .attr('width', 8 + 'px')
-				//   .attr('height', 8 + 'px')
-				//   .style('fill', 'red')
 				that.items = []
 				itemDivs
 						.append('div')
@@ -399,8 +399,7 @@
 						.style('position', 'absolute')
 						.style('top', $(window).height() * 0.5 + 'px')
 						.style('left', (d, i) => {
-							let winWidth = $(window).width()
-							let x = coreWidth + 20 + winWidth / 15 * i
+							let x = coreWidth * (i >= that.coreLeft) + 20 + that.gap * i
 							let item = {
 								id: d.id,
 								name: d.name,
@@ -413,6 +412,15 @@
 						})
 						.style('transform', 'rotate(' + 45 + 'deg)')
 						.style('text-align', 'center')
+						.on('click', (item) => {
+							let core = {
+								type: 'item',
+								text: item.name,
+								id: item.id
+							}
+							console.log('change core', core)
+							that.updateCore(core)
+						})
 						.append('span')
 						.classed('item', true)
 						.style('text-overflow', 'ellipsis')
@@ -425,12 +433,12 @@
 						.on('mouseover', function (d) {
 							d3.select(this).classed('itemHover', true)
 							d.authors.forEach((author) => {
-								console.log('author', author)
+								// console.log('author', author)
 								$('#' + author).css('background', 'rgb(213,230,236)')
 								$('#' + author).css('border-radius', '0.5em')
 							})
 							d.tags.forEach((tag) => {
-								console.log('author', tag)
+								// console.log('tag', tag)
 								$('#' + tag).css('background', 'rgb(244,227,230)')
 								$('#' + tag).css('border-radius', '0.5em')
 							})
