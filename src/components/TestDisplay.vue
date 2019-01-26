@@ -15,9 +15,9 @@
 		<div id="itemDiv"/>
 		<div id="tagDiv"/>
 		<div id="pathDiv" class="path_div"/>
-		<svg>
-			<rect @click="backSearchView" width="50px" height="50px" style="fill:rgb(0,0,255);stroke-width:1; stroke:rgb(0,0,0)"/>
-		</svg>
+		<!--<svg>-->
+			<!--<rect @click="backSearchView" width="50px" height="50px" style="fill:rgb(0,0,255);stroke-width:1; stroke:rgb(0,0,0)"/>-->
+		<!--</svg>-->
 	</div>
 </template>
 
@@ -56,10 +56,10 @@
 			])
 		},
 		mounted () {
-			console.log('启动TestView成功！！！')
-			this.itemWidth = $(window).height() * 0.25
-			this.itemOrder = 'cited'
-			let winWidth = $(window).width()
+			console.log('启动TestView成功！！！');
+			this.itemWidth = $(window).height() * 0.25;
+			this.itemOrder = 'cited';
+			let winWidth = $(window).width();
 			this.gap = winWidth / 15
 		},
 		watch: {
@@ -81,8 +81,8 @@
 				// 		.each((item) => {
 				// 			console.log(item.year)
 				// 		})
-				let sortF = this.sortItemsByTime
-				let that = this
+				let sortF = this.sortItemsByTime;
+				let that = this;
 				if (val === 'cited') {
 					sortF = this.sortItemsByCites
 				}
@@ -90,8 +90,8 @@
 					sortF = this.sortItemsByRandom
 				}
 				if (that.coreType === 'item') {
-					that.coreRefList.sort(sortF)
-					that.coreCiteList.sort(sortF)
+					that.coreRefList.sort(sortF);
+					that.coreCiteList.sort(sortF);
 					that.computeCore2items()
 				} else {
 					that.core2items.sort(sortF)
@@ -138,15 +138,34 @@
 				return +itemB.cites - itemA.cites
 			},
 			sortItemsByRandom (itemA, itemB) {
-				let sum = +itemA.year + itemB.year
+				let sum = +itemA.year + itemB.year;
 				return sum - sum + Math.random() - 0.5
 			},
 			drawCoreView () {
 				let that = this
-				d3.select('#coreText').selectAll('span').remove()
-				d3.select('#coreText').append('span').attr('id', 'coreSpan').classed('core_' + this.coreType, true).text(this.coreText)
-				let coreWidth = $('#coreDiv')[0].getBoundingClientRect().width
-				$('#coreDiv').css('left', that.coreLeft * that.gap + $(window).width() * 0.03)
+				d3.select('#coreText').selectAll('span').remove();
+				d3.select('#coreText').append('span').attr('id', 'coreSpan').classed('core_' + this.coreType, true).text(this.coreText);
+				d3.select('#coreText')
+						.on('mousemove', function () {
+							let width = d3.select('#coreText').node().getBoundingClientRect().width
+							console.log('d3.mouse(this)')
+							let distance = width - d3.mouse(this)[0]
+							console.log(distance)
+							if (distance < 20) {
+								console.log('change X')
+								$('#coreSpan').removeClass('core_' + that.coreType).addClass('core_' + that.coreType + '_delect')
+								$('#coreSpan').click(() => {
+									that.backSearchView()
+								})
+							} else {
+								$('#coreSpan').removeClass('core_' + that.coreType + '_delect').addClass('core_' + that.coreType).off('click')
+							}
+						})
+						.on('mouseout', () => {
+							$('#coreSpan').removeClass('core_' + that.coreType + '_delect').addClass('core_' + that.coreType).off('click')
+						})
+				let coreWidth = $('#coreDiv')[0].getBoundingClientRect().width;
+				$('#coreDiv').css('left', that.coreLeft * that.gap + $(window).width() * 0.04);
 				// console.log('coreWidth', coreWidth)
 				return coreWidth
 			},
@@ -159,7 +178,7 @@
 				return result
 			},
 			backSearchView () {
-				$('#searchView').css('display', 'inherit')
+				$('#searchView').css('display', 'inherit');
 				$('#testDisplay').css('display', 'none')
 			},
 			computeAuthors (items) {
@@ -276,25 +295,25 @@
 				// console.log('loc', loc)
 				for (let X in loc) {
 					// console.log('locX', X, loc[X])
-					let bigGapCount = Object.keys(loc[X]).length
-					let smallGapCount = 0
+					let bigGapCount = Object.keys(loc[X]).length;
+					let smallGapCount = 0;
 					for (let Y in loc[X]) {
 						smallGapCount += (+Object.keys(loc[X][Y]).length)
 					}
-					let authorViewHeight = +$(window).height() * 0.3
-					let gap = authorViewHeight / (bigGapCount * 3 + smallGapCount)
-					let foo = Math.random()
+					let authorViewHeight = +$(window).height() * 0.3;
+					let gap = authorViewHeight / (bigGapCount * 3 + smallGapCount);
+					let foo = Math.random();
 					// let foo = 0
 					// console.log(bigGapCount, smallGapCount, gap, authorViewHeight, foo)
-					let y = authorViewHeight - 2 * gap * foo
+					let y = authorViewHeight - 2 * gap * foo;
 					// console.log('y', y)
 					for (let Y in loc[X]) {
-						let authors = loc[X][Y]
+						let authors = loc[X][Y];
 						authors.forEach((author) => {
-							let x = coreWidth * (X >= that.coreLeft) + that.gap * X + 20
-							y = y - gap
-							author.top = y
-							author.left = x
+							let x = coreWidth * (X >= that.coreLeft) + that.gap * X + 20;
+							y = y - gap;
+							author.top = y;
+							author.left = x;
 							// console.log('y', y)
 							// console.log($(window).width(), $(window).height())
 							// console.log('author', author, x, y)
@@ -310,8 +329,8 @@
 											type: 'author',
 											text: author.name,
 											id: author.id
-										}
-										console.log('change core', core)
+										};
+										console.log('change core', core);
 										that.updateCore(core)
 									})
 									.append('span')
@@ -327,32 +346,32 @@
 				}
 			},
 			drawTagView (tags, loc, coreWidth) {
-				let tagDiv = d3.select('#tagDiv')
-				tagDiv.selectAll('div').remove()
+				let tagDiv = d3.select('#tagDiv');
+				tagDiv.selectAll('div').remove();
 				// console.log('authors', authors)
 				// console.log('loc', loc)
 				for (let X in loc) {
 					// console.log('locX', X, loc[X])
-					let bigGapCount = Object.keys(loc[X]).length
+					let bigGapCount = Object.keys(loc[X]).length;
 					let smallGapCount = 0
 					for (let Y in loc[X]) {
 						smallGapCount += (+Object.keys(loc[X][Y]).length)
 					}
-					let tagViewHeight = +$(window).height() * 0.3
-					let gap = tagViewHeight / (bigGapCount * 3 + smallGapCount)
+					let tagViewHeight = +$(window).height() * 0.3;
+					let gap = tagViewHeight / (bigGapCount * 3 + smallGapCount);
 					let foo = Math.random()
 					// let foo = 0
 					// console.log(bigGapCount, smallGapCount, gap, authorViewHeight, foo)
-					let y = $(window).height() * 0.7 + 2 * gap * foo
+					let y = $(window).height() * 0.7 + 2 * gap * foo;
 					// console.log('y', y)
 					for (let Y in loc[X]) {
 						let that = this
 						let tags = loc[X][Y]
 						tags.forEach((tag) => {
-							let x = coreWidth * (X >= that.coreLeft) + 20 + that.gap * (+X + 1)
-							tag.left = x
-							y = y + gap
-							tag.top = y
+							let x = coreWidth * (X >= that.coreLeft) + 20 + that.gap * (+X + 1);
+							tag.left = x;
+							y = y + gap;
+							tag.top = y;
 							// console.log('y', y)
 							// console.log($(window).width(), $(window).height())
 							// console.log('author', author, x, y)
@@ -369,7 +388,7 @@
 											text: tag.name,
 											id: tag.id
 										}
-										console.log('change core', core)
+										console.log('change core', core);
 										that.updateCore(core)
 									})
 									.append('span')
@@ -386,11 +405,11 @@
 			},
 			drawItemView (coreWidth) {
 				let that = this
-				let items = that.core2items
-				let itemDiv = d3.select('#itemDiv')
-				itemDiv.selectAll('div').remove()
-				let itemDivs = itemDiv.selectAll('div').data(items).enter()
-				that.items = []
+				let items = that.core2items;
+				let itemDiv = d3.select('#itemDiv');
+				itemDiv.selectAll('div').remove();
+				let itemDivs = itemDiv.selectAll('div').data(items).enter();
+				that.items = [];
 				itemDivs
 						.append('div')
 						.attr('id', (d, i) => {
@@ -399,15 +418,15 @@
 						.style('position', 'absolute')
 						.style('top', $(window).height() * 0.5 + 'px')
 						.style('left', (d, i) => {
-							let x = coreWidth * (i >= that.coreLeft) + 20 + that.gap * i
+							let x = coreWidth * (i >= that.coreLeft) + 20 + that.gap * i;
 							let item = {
 								id: d.id,
 								name: d.name,
 								left: x,
 								top: $(window).height() * 0.5
 							}
-							that.items.push(item)
-							that.loc2item[i] = item
+							that.items.push(item);
+							that.loc2item[i] = item;
 							return x + 'px'
 						})
 						.style('transform', 'rotate(' + 45 + 'deg)')
@@ -418,7 +437,7 @@
 								text: item.name,
 								id: item.id
 							}
-							console.log('change core', core)
+							console.log('change core', core);
 							that.updateCore(core)
 						})
 						.append('span')
@@ -431,63 +450,71 @@
 							return d.name
 						})
 						.on('mouseover', function (d) {
-							d3.select(this).classed('itemHover', true)
+							d3.select(this).classed('itemHover', true);
 							d.authors.forEach((author) => {
 								// console.log('author', author)
-								$('#' + author).css('background', 'rgb(213,230,236)')
-								$('#' + author).css('border-radius', '0.5em')
-							})
+								$('#' + author).css({
+									'background': 'rgb(213,230,236)',
+									'border-radius': '0.5em'
+								})
+								// $('#' + author).css('background', 'rgb(213,230,236)')
+								// $('#' + author).css('border-radius', '0.5em')
+							});
 							d.tags.forEach((tag) => {
 								// console.log('tag', tag)
-								$('#' + tag).css('background', 'rgb(244,227,230)')
-								$('#' + tag).css('border-radius', '0.5em')
+								$('#' + tag).css({
+									'background': 'rgb(244,227,230)',
+									'border-radius': '0.5em'
+								})
+								// $('#' + tag).css('background', 'rgb(244,227,230)')
+								// $('#' + tag).css('border-radius', '0.5em')
 							})
 						})
 						.on('mouseout', function (d) {
-							d3.select(this).classed('itemHover', false)
+							d3.select(this).classed('itemHover', false);
 							d.authors.forEach((author) => {
 								$('#' + author).css('background', 'rgba(255,255,255,0.5)')
-							})
+							});
 							d.tags.forEach((tag) => {
 								$('#' + tag).css('background', 'rgba(255,255,255,0.5)')
 							})
 						})
 			},
 			drawPath () {
-				let that = this
-				let pathDiv = d3.select('#pathDiv')
-				pathDiv.selectAll('svg').remove()
+				let that = this;
+				let pathDiv = d3.select('#pathDiv');
+				pathDiv.selectAll('svg').remove();
 				let svg = pathDiv.append('svg')
 						.attr('width', $(window).width())
-						.attr('height', $(window).height())
-				let h = ''
+						.attr('height', $(window).height());
+				let h = '';
 				that.authors.forEach((author => {
 					author.items.forEach((loc) => {
 						// let item = that.loc2item[loc]
 						// let endX = item.left + that.itemWidth * (1 - Math.sqrt(2) / 2)
 						// let endY = item.top - that.itemWidth * Math.sqrt(2) / 4
-						let idAuthor = '#' + author.id
-						let rectAuthor = $(idAuthor)[0].getBoundingClientRect()
-						let startX = rectAuthor.left + rectAuthor.width / 2
-						let startY = rectAuthor.top + rectAuthor.height
+						let idAuthor = '#' + author.id;
+						let rectAuthor = $(idAuthor)[0].getBoundingClientRect();
+						let startX = rectAuthor.left + rectAuthor.width / 2;
+						let startY = rectAuthor.top + rectAuthor.height;
 
-						let idItem = '#item_' + loc
-						let rect = $(idItem)[0].getBoundingClientRect()
-						let endX = rect.x
-						let endY = rect.y
+						let idItem = '#item_' + loc;
+						let rect = $(idItem)[0].getBoundingClientRect();
+						let endX = rect.x;
+						let endY = rect.y;
 
-						let control2 = $(window).height() * 0.05
-						let control1X = startX
-						let control1Y = endY - control2
+						let control2 = $(window).height() * 0.05;
+						let control1X = startX;
+						let control1Y = endY - control2;
 
-						let control2X = endX - control2
-						let control2Y = endY - control2
+						let control2X = endX - control2;
+						let control2Y = endY - control2;
 
 						h += '<path class="author_path" d="M ' + startX + ' ' + startY + ' C ' + control1X + ' ' + control1Y + ' ' + control2X + ' ' + control2Y + ' ' + endX + ' ' + endY + '"/> '
 						// console.log('compare', endX, endY)
 						// console.log('try?', rect)
 					})
-				}))
+				}));
 				that.tags.forEach((tag => {
 					tag.items.forEach((loc) => {
 						// let item = that.loc2item[loc]
@@ -514,7 +541,7 @@
 						// console.log('compare', endX, endY)
 						// console.log('try?', rect)
 					})
-				}))
+				}));
 				svg.html(h)
 			}
 		}

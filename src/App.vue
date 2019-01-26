@@ -73,19 +73,45 @@
   stroke-width: 1px;
 }
 
+.core {
+  background: url("./assets/delete.png") right no-repeat;
+}
+
 .core_author {
   color: #fff;
   font-size: 16px;
   border-radius: 1.5em;
   border: 2px solid #3488BC;
-  display: inherit;
+  display: block;
   line-height: 20px;
-  /*text-overflow: ellipsis;*/
-  /*overflow: hidden;*/
-  /*white-space: nowrap;*/
-  /*max-width: 150px;*/
-  padding: 2px 4px 2px 18px;
-  background: #3488BC url("./assets/author6.png") no-repeat left center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 150px;
+  padding: 2px 18px 2px 18px;
+  background-color: #3488BC;
+  background-image: url("./assets/author6.png"), url("./assets/delete2.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+}
+
+.core_author_delect {
+  cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 1.5em;
+  border: 2px solid #3488BC;
+  display: block;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 150px;
+  padding: 2px 18px 2px 18px;
+  background-color: #3488BC;
+  background-image: url("./assets/author6.png"), url("./assets/delete.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
 }
 
 .core_tag {
@@ -93,14 +119,38 @@
   font-size: 16px;
   border-radius: 1.5em;
   border: 2px solid #CD5968;
-  display: inherit;
+  display: block;
   line-height: 20px;
-  /*text-overflow: ellipsis;*/
-  /*overflow: hidden;*/
-  /*white-space: nowrap;*/
-  /*max-width: 150px;*/
-  padding: 2px 4px 2px 18px;
-  background: #CD5968 url("./assets/tag6.png") no-repeat left center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 150px;
+  padding: 2px 18px 2px 18px;
+  /*background: #CD5968 url("./assets/tag5.png") no-repeat left center;*/
+  background-color: #CD5968;
+  background-image: url("./assets/tag6.png"), url("./assets/delete2.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+}
+
+.core_tag_delect {
+  cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 1.5em;
+  border: 2px solid #CD5968;
+  display: block;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 150px;
+  padding: 2px 18px 2px 18px;
+  /*background: #CD5968 url("./assets/tag5.png") no-repeat left center;*/
+  background-color: #CD5968;
+  background-image: url("./assets/tag6.png"), url("./assets/delete.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
 }
 
 .core_item {
@@ -108,13 +158,37 @@
   font-size: 16px;
   border-radius: 1.5em;
   border: 2px solid #62A55E;
-  display: inherit;
+  display: block;
   line-height: 20px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   max-width: 150px;
-  padding: 2px 4px 2px 18px;
-  background: #62A55E url("./assets/item6.png") no-repeat left center;
+  padding: 2px 18px 2px 18px;
+  /*background: #62A55E url("./assets/item5.png") no-repeat left center;*/
+  background-color: #62A55E;
+  background-image: url("./assets/item6.png"), url("./assets/delete2.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+}
+
+.core_item_delect {
+  cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 1.5em;
+  border: 2px solid #62A55E;
+  display: block;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 150px;
+  padding: 2px 18px 2px 18px;
+  /*background: #62A55E url("./assets/item5.png") no-repeat left center;*/
+  background-color: #62A55E;
+  background-image: url("./assets/item6.png"), url("./assets/delete.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
 }
 </style>
