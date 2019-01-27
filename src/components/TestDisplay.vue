@@ -129,6 +129,7 @@
 				'updateWord2Authors',
 				'updateWord2Tags',
 				'computeCore2items',
+				'updateCompareCore',
 				'updateCore'
 			]),
 			sortItemsByTime (itemA, itemB) {
@@ -143,20 +144,21 @@
 			},
 			drawCoreView () {
 				let that = this
+				console.log('that.coreType, that.coreText', that.coreType, that.coreText)
 				d3.select('#coreText').selectAll('span').remove();
-				d3.select('#coreText').append('span').attr('id', 'coreSpan').classed('core_' + this.coreType, true).text(this.coreText);
+				d3.select('#coreText').append('span').attr('id', 'coreSpan').classed('core_' + that.coreType, true).text(that.coreText);
 				d3.select('#coreText')
 						.on('mousemove', function () {
 							let width = d3.select('#coreText').node().getBoundingClientRect().width
-							console.log('d3.mouse(this)')
+							// console.log('d3.mouse(this)')
 							let distance = width - d3.mouse(this)[0]
-							console.log(distance)
+							// console.log(distance)
 							if (distance < 20) {
 								console.log('change X')
 								$('#coreSpan').removeClass('core_' + that.coreType).addClass('core_' + that.coreType + '_delect')
-								$('#coreSpan').click(() => {
-									that.backSearchView()
-								})
+										.click(() => {
+											that.backSearchView()
+										})
 							} else {
 								$('#coreSpan').removeClass('core_' + that.coreType + '_delect').addClass('core_' + that.coreType).off('click')
 							}
@@ -324,14 +326,73 @@
 									.style('top', y + 'px')
 									.style('left', x + 'px')
 									.style('text-align', 'center')
-									.on('click', () => {
-										let core = {
-											type: 'author',
-											text: author.name,
-											id: author.id
-										};
-										console.log('change core', core);
-										that.updateCore(core)
+									// .on('click', () => {
+									// 	let core = {
+									// 		type: 'author',
+									// 		text: author.name,
+									// 		id: author.id
+									// 	};
+									// 	console.log('change core', core);
+									// 	that.updateCore(core)
+									// })
+									.on('mousemove', function () {
+										d3.select(this)
+												.select('span')
+												.classed('author_hover', true)
+										if (that.coreType === 'author' || that.coreType === 'tag') {
+											d3.select(this)
+													.select('span')
+													.classed('author_hover_compare', true)
+											let width = d3.select(this).node().getBoundingClientRect().width
+											let distance = width - d3.mouse(this)[0]
+											// console.log(width, distance)
+											if (distance < 20) {
+												d3.select(this)
+														.on('click', () => {
+															let core = {
+																type: 'author',
+																text: author.name,
+																id: author.id
+															};
+															console.log('compare_core', core)
+															that.updateCompareCore(core)
+														})
+														.select('span')
+														.classed('author_hover_compare_add', true)
+											} else {
+												d3.select(this)
+														.on('click', () => {
+															let core = {
+																type: 'author',
+																text: author.name,
+																id: author.id
+															};
+															console.log('change core', core);
+															that.updateCore(core)
+														})
+														.select('span')
+														.classed('author_hover_compare_add', false)
+											}
+										} else {
+											d3.select(this)
+													.on('click', () => {
+														let core = {
+															type: 'author',
+															text: author.name,
+															id: author.id
+														};
+														console.log('change core', core);
+														that.updateCore(core)
+													})
+										}
+									})
+									.on('mouseout', function () {
+										d3.select(this)
+												.on('click', null)
+												.select('span')
+												.classed('author_hover', false)
+												.classed('author_hover_compare', false)
+												.classed('author_hover_compare_add', false)
 									})
 									.append('span')
 									.classed('author', true)
@@ -382,14 +443,56 @@
 									.style('top', y + 'px')
 									.style('left', x + 'px')
 									.style('text-align', 'center')
-									.on('click', () => {
-										let core = {
-											type: 'tag',
-											text: tag.name,
-											id: tag.id
+									// .on('click', () => {
+									// 	let core = {
+									// 		type: 'tag',
+									// 		text: tag.name,
+									// 		id: tag.id
+									// 	}
+									// 	console.log('change core', core);
+									// 	that.updateCore(core)
+									// })
+									.on('mousemove', function () {
+										d3.select(this)
+												.select('span')
+												.classed('tag_hover', true)
+										if (that.coreType === 'author' || that.coreType === 'tag') {
+											d3.select(this)
+													.select('span')
+													.classed('tag_hover_compare', true)
+											let width = d3.select(this).node().getBoundingClientRect().width
+											let distance = width - d3.mouse(this)[0]
+											// console.log(width, distance)
+											if (distance < 20) {
+												d3.select(this)
+														.on('click', () => {
+															console.log('compare_core', tag.id, tag.name)
+														})
+														.select('span')
+														.classed('tag_hover_compare_add', true)
+											} else {
+												d3.select(this)
+														.on('click', () => {
+															let core = {
+																type: 'tag',
+																text: tag.name,
+																id: tag.id
+															};
+															console.log('change core', core);
+															that.updateCore(core)
+														})
+														.select('span')
+														.classed('tag_hover_compare_add', false)
+											}
 										}
-										console.log('change core', core);
-										that.updateCore(core)
+									})
+									.on('mouseout', function () {
+										d3.select(this)
+												.on('click', null)
+												.select('span')
+												.classed('tag_hover', false)
+												.classed('tag_hover_compare', false)
+												.classed('tag_hover_compare_add', false)
 									})
 									.append('span')
 									.classed('tag', true)
@@ -454,7 +557,7 @@
 							d.authors.forEach((author) => {
 								// console.log('author', author)
 								$('#' + author).css({
-									'background': 'rgb(213,230,236)',
+									'background': '#D5E6EC',
 									'border-radius': '0.5em'
 								})
 								// $('#' + author).css('background', 'rgb(213,230,236)')
@@ -463,7 +566,7 @@
 							d.tags.forEach((tag) => {
 								// console.log('tag', tag)
 								$('#' + tag).css({
-									'background': 'rgb(244,227,230)',
+									'background': '#F4E2E5',
 									'border-radius': '0.5em'
 								})
 								// $('#' + tag).css('background', 'rgb(244,227,230)')

@@ -18,8 +18,7 @@
   color: #238647;
   border-radius: 1.5em;
   /*border: 2px solid #62A55E;*/
-  padding-left: 18px;
-  padding-right: 4px;
+  padding: 2px 4px 2px 18px;
   font-size: 12px;
   background: rgba(255,255,255,0.5) url("./assets/item5.png") no-repeat left center;
   cursor: pointer;
@@ -32,10 +31,9 @@
 .author {
   display: block;
   color: #004787;
-  border-radius: 1.5em;
+  /*border-radius: 1.5em;*/
   /*border: 2px solid #62A55E;*/
-  padding-left: 18px;
-  padding-right: 4px;
+  padding: 2px 4px 2px 18px;
   font-size: 12px;
   background: rgba(255, 255, 255, 0.5) url("./assets/author5.png") no-repeat left center;
   text-overflow: ellipsis;
@@ -43,15 +41,37 @@
   white-space: nowrap;
   max-width: 80px;
   cursor: pointer;
+  z-index: 50;
+}
+
+.author_hover {
+  border-radius: 1.5em;
+  border: 2px solid #3488BC;
+  z-index: 52;
+}
+
+.author_hover_compare {
+  padding-right: 18px;
+  background-image: url("./assets/author5.png"), url("./assets/arrow_author2.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+  z-index: 53;
+}
+
+.author_hover_compare_add {
+  padding-right: 18px;
+  background-image: url("./assets/author5.png"), url("./assets/arrow_author.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+  z-index: 54;
 }
 
 .tag {
   display: block;
   color: #B2203B;
-  border-radius: 1.5em;
+  /*border-radius: 1.5em;*/
   /*border: 2px solid #62A55E;*/
-  padding-left: 18px;
-  padding-right: 4px;
+  padding: 2px 4px 2px 18px;
   font-size: 12px;
   background: rgba(255,255,255,.5) url("./assets/tag5.png") no-repeat left center;
   text-overflow: ellipsis;
@@ -59,6 +79,29 @@
   white-space: nowrap;
   max-width: 80px;
   cursor: pointer;
+  z-index: 50;
+}
+
+.tag_hover {
+  border-radius: 1.5em;
+  border: 2px solid #CD5968;
+  z-index: 52;
+}
+
+.tag_hover_compare {
+  padding-right: 18px;
+  background-image: url("./assets/tag5.png"), url("./assets/arrow_tag2.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+  z-index: 53;
+}
+
+.tag_hover_compare_add {
+  padding-right: 18px;
+  background-image: url("./assets/tag5.png"), url("./assets/arrow_tag.png");
+  background-repeat: no-repeat, no-repeat;
+  background-position: left center, right center;
+  z-index: 54;
 }
 
 .author_path {
