@@ -11,6 +11,17 @@
 			</div>
 			<div id="coreText"/>
 		</div>
+		<div id="compareCoreDiv">
+			<select v-model="itemOrder" class="order">
+				<option value="cited">most cited</option>
+				<option value="time">most recent</option>
+				<option value="random">random</option>
+			</select>
+			<div>
+				<span>publications about</span>
+			</div>
+			<div id="compareCoreText"/>
+		</div>
 		<div id="authorDiv"/>
 		<div id="itemDiv"/>
 		<div id="tagDiv"/>
@@ -39,7 +50,8 @@
 				loc2item: {},
 				itemWidth: 0,
 				itemOrder: '',
-				gap: 0
+				gap: 0,
+				compareCoreWidth: 0
 			}
 		},
 		computed: {
@@ -47,11 +59,18 @@
 				'core2items',
 				'coreType',
 				'coreText',
+				'compareCoreType',
+				'compareCoreText',
 				'authorIdDic',
 				'itemIdDic',
 				'coreRefList',
 				'coreCiteList',
 				'coreLeft',
+				'coreRight',
+				'isCompare',
+				'oldLeft',
+				'insect',
+				'compareLeft',
 				'tagIdDic'
 			])
 		},
@@ -61,8 +80,17 @@
 			this.itemOrder = 'cited';
 			let winWidth = $(window).width();
 			this.gap = winWidth / 15
+			$('#compareCoreDiv').css('display', 'none')
 		},
 		watch: {
+			isCompare (val) {
+				console.log(val)
+				if (val) {
+					$('#compareCoreDiv').css('display', 'inherit')
+				} else {
+					$('#compareCoreDiv').css('display', 'none')
+				}
+			},
 			itemOrder (val) {
 				console.log('order', val)
 				// d3.select('#itemDiv').selectAll('div')
@@ -146,7 +174,7 @@
 				let that = this
 				console.log('that.coreType, that.coreText', that.coreType, that.coreText)
 				d3.select('#coreText').selectAll('span').remove();
-				d3.select('#coreText').append('span').attr('id', 'coreSpan').classed('core_' + that.coreType, true).text(that.coreText);
+				d3.select('#coreText').append('span').attr('id', 'compareCoreSpan').classed('core_' + that.coreType, true).text(that.coreText);
 				d3.select('#coreText')
 						.on('mousemove', function () {
 							let width = d3.select('#coreText').node().getBoundingClientRect().width
@@ -160,7 +188,7 @@
 											that.backSearchView()
 										})
 							} else {
-								$('#coreSpan').removeClass('core_' + that.coreType + '_delect').addClass('core_' + that.coreType).off('click')
+								$('#compareCoreSpan').removeClass('core_' + that.coreType + '_delect').addClass('core_' + that.coreType).off('click')
 							}
 						})
 						.on('mouseout', () => {
@@ -169,6 +197,32 @@
 				let coreWidth = $('#coreDiv')[0].getBoundingClientRect().width;
 				$('#coreDiv').css('left', that.coreLeft * that.gap + $(window).width() * 0.04);
 				// console.log('coreWidth', coreWidth)
+				if (that.isCompare) {
+					console.log('that.coreType, that.coreText', that.compareCoreType, that.compareCoreText)
+					d3.select('#compareCoreText').selectAll('span').remove();
+					d3.select('#compareCoreText').append('span').attr('id', 'compareCoreSpan').classed('core_' + that.compareCoreType, true).text(that.compareCoreText);
+					d3.select('#compareCoreText')
+							.on('mousemove', function () {
+								let width = d3.select('#compareCoreText').node().getBoundingClientRect().width
+								// console.log('d3.mouse(this)')
+								let distance = width - d3.mouse(this)[0]
+								// console.log(distance)
+								if (distance < 20) {
+									console.log('change X')
+									$('#compareCoreSpan').removeClass('core_' + that.compareCoreType).addClass('core_' + that.compareCoreType + '_delect')
+											.click(() => {
+												that.backSearchView()
+											})
+								} else {
+									$('#compareCoreSpan').removeClass('core_' + that.compareCoreType + '_delect').addClass('core_' + that.compareCoreType).off('click')
+								}
+							})
+							.on('mouseout', () => {
+								$('#compareCoreSpan').removeClass('core_' + that.compareCoreType + '_delect').addClass('core_' + that.compareCoreType).off('click')
+							})
+					that.compareCoreWidth = $('#compareCoreDiv')[0].getBoundingClientRect().width;
+					$('#compareCoreDiv').css('left', (that.coreLeft + that.coreRight + 1) * that.gap + $(window).width() * 0.08);
+				}
 				return coreWidth
 			},
 			locX (foo) {
@@ -312,7 +366,7 @@
 					for (let Y in loc[X]) {
 						let authors = loc[X][Y];
 						authors.forEach((author) => {
-							let x = coreWidth * (X >= that.coreLeft) + that.gap * X + 20;
+							let x = coreWidth * (X >= that.coreLeft) + coreWidth * (X >= that.coreRight + that.coreLeft) + 20 * (1 + 3 * (X >= that.coreRight + that.coreLeft)) + that.gap * X;
 							y = y - gap;
 							author.top = y;
 							author.left = x;
@@ -429,7 +483,7 @@
 						let that = this
 						let tags = loc[X][Y]
 						tags.forEach((tag) => {
-							let x = coreWidth * (X >= that.coreLeft) + 20 + that.gap * (+X + 1);
+							let x = coreWidth * (X >= that.coreLeft) + coreWidth * (X >= that.coreRight + that.coreLeft) + 20 * (1 + 3 * (X >= that.coreRight + that.coreLeft)) + that.gap * X;
 							tag.left = x;
 							y = y + gap;
 							tag.top = y;
@@ -466,7 +520,13 @@
 											if (distance < 20) {
 												d3.select(this)
 														.on('click', () => {
-															console.log('compare_core', tag.id, tag.name)
+															let core = {
+																type: 'tag',
+																text: tag.name,
+																id: tag.id
+															};
+															console.log('compare_core', core)
+															that.updateCompareCore(core)
 														})
 														.select('span')
 														.classed('tag_hover_compare_add', true)
@@ -521,7 +581,7 @@
 						.style('position', 'absolute')
 						.style('top', $(window).height() * 0.5 + 'px')
 						.style('left', (d, i) => {
-							let x = coreWidth * (i >= that.coreLeft) + 20 + that.gap * i;
+							let x = coreWidth * (i >= that.coreLeft) + coreWidth * (i >= that.coreRight + that.coreLeft) + 20 * (1 + 3 * (i >= that.coreRight + that.coreLeft)) + that.gap * i;
 							let item = {
 								id: d.id,
 								name: d.name,
@@ -664,6 +724,16 @@
 	}
 
 	#coreDiv {
+		position: absolute;
+		left: 1%;
+		top: 45%;
+		color: #999;
+		font-size: 16px;
+		line-height: 30px;
+	}
+
+	#compareCoreDiv {
+		/*display: none;*/
 		position: absolute;
 		left: 1%;
 		top: 45%;
