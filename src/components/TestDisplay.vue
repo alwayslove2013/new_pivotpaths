@@ -174,7 +174,7 @@
 				let that = this
 				console.log('that.coreType, that.coreText', that.coreType, that.coreText)
 				d3.select('#coreText').selectAll('span').remove();
-				d3.select('#coreText').append('span').attr('id', 'compareCoreSpan').classed('core_' + that.coreType, true).text(that.coreText);
+				d3.select('#coreText').append('span').attr('id', 'coreSpan').classed('core_' + that.coreType, true).text(that.coreText);
 				d3.select('#coreText')
 						.on('mousemove', function () {
 							let width = d3.select('#coreText').node().getBoundingClientRect().width
@@ -188,7 +188,7 @@
 											that.backSearchView()
 										})
 							} else {
-								$('#compareCoreSpan').removeClass('core_' + that.coreType + '_delect').addClass('core_' + that.coreType).off('click')
+								$('#coreSpan').removeClass('core_' + that.coreType + '_delect').addClass('core_' + that.coreType).off('click')
 							}
 						})
 						.on('mouseout', () => {
